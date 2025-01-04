@@ -31,8 +31,8 @@ local function open_floating_window()
 end
 
 M.open_note = function(group)
-  local win = open_floating_window()
   local cb = function(err, res)
+    local win = open_floating_window()
     assert(not err, tostring(err))
     local note_buffer = vim.api.nvim_buf_get_number(0)
     local close_window = function()
@@ -51,8 +51,8 @@ M.open_note = function(group)
 end
 
 M.pick_note = function()
-  local win = open_floating_window()
   local cb = function(notes)
+    local win = open_floating_window()
     local note_buffer = vim.api.nvim_buf_get_number(0)
     local close_window = function()
       pcall(vim.api.nvim_win_close, win, true)
