@@ -1,7 +1,8 @@
 local api = require("zk.api")
 
 local M = {}
-M.open_note = function(group)
+
+local function open_floating_window()
   -- Calculate window dimensions and position
   local width = 80
   local height = math.floor(0.80 * vim.o.lines)
@@ -26,6 +27,11 @@ M.open_note = function(group)
     border = 'rounded'
   })
 
+  return win
+end
+
+M.open_note = function(group)
+  local win = open_floating_window()
   local cb = function(err, res)
     assert(not err, tostring(err))
     local note_buffer = vim.api.nvim_buf_get_number(0)
@@ -42,6 +48,26 @@ M.open_note = function(group)
   end
 
   api.new(nil, { group = group, edit = true }, cb)
+end
+
+M.pick_note = function()
+  local win = open_floating_window()
+  local cb = function(notes)
+    local note_buffer = vim.api.nvim_buf_get_number(0)
+    local close_window = function()
+      pcall(vim.api.nvim_win_close, win, true)
+    end
+
+    vim.cmd("edit " .. notes[1].absPath)
+    vim.api.nvim_create_autocmd("BufLeave", {
+      buffer = note_buffer,
+      callback = close_window
+    });
+    vim.keymap.set('n', 'q', close_window, { buffer = note_buffer })
+  end
+  local zk = require("zk")
+
+  zk.pick_notes({ sort = { 'modified' } }, {}, cb)
 end
 
 return M
