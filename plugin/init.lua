@@ -17,4 +17,4 @@ end, {})
 
 vim.api.nvim_set_keymap('n', '<leader>Nd', ':FloatDaily<CR>', { desc = 'Open daily note in floating window.' })
 vim.api.nvim_set_keymap('n', '<leader>Nw', ':FloatWeekly<CR>', { desc = 'Open weekly note in floating window.' })
-vim.api.nvim_set_keymap('n', '<leader>Np', ':FloatPick<CR>', { desc = 'Pick a note and open it in a floating window.' })
+vim.api.nvim_set_keymap('n', '<leader>No', ':FloatPick<CR>', { desc = 'Pick a note and open it in a floating window.' })
