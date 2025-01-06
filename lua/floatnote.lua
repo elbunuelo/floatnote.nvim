@@ -30,21 +30,26 @@ local function open_floating_window()
   return win
 end
 
+local open_note_in_float = function(path)
+  local win = open_floating_window()
+  local close_window = function()
+    pcall(vim.api.nvim_win_close, win, true)
+  end
+
+  vim.cmd("edit " .. path)
+
+  local note_buffer = vim.api.nvim_get_current_buf()
+  vim.api.nvim_create_autocmd("BufLeave", {
+    buffer = note_buffer,
+    callback = close_window
+  });
+  vim.keymap.set('n', 'q', close_window, { buffer = note_buffer })
+end
+
 M.open_note = function(group)
   local cb = function(err, res)
-    local win = open_floating_window()
     assert(not err, tostring(err))
-    local note_buffer = vim.api.nvim_buf_get_number(0)
-    local close_window = function()
-      pcall(vim.api.nvim_win_close, win, true)
-    end
-
-    vim.cmd("edit " .. res.path)
-    vim.api.nvim_create_autocmd("BufLeave", {
-      buffer = note_buffer,
-      callback = close_window
-    });
-    vim.keymap.set('n', 'q', close_window, { buffer = note_buffer })
+    open_note_in_float(res.path)
   end
 
   api.new(nil, { group = group, edit = true }, cb)
@@ -52,18 +57,7 @@ end
 
 M.pick_note = function()
   local cb = function(notes)
-    local win = open_floating_window()
-    local note_buffer = vim.api.nvim_buf_get_number(0)
-    local close_window = function()
-      pcall(vim.api.nvim_win_close, win, true)
-    end
-
-    vim.cmd("edit " .. notes[1].absPath)
-    vim.api.nvim_create_autocmd("BufLeave", {
-      buffer = note_buffer,
-      callback = close_window
-    });
-    vim.keymap.set('n', 'q', close_window, { buffer = note_buffer })
+    open_note_in_float(notes[1].absPath)
   end
   local zk = require("zk")
 
